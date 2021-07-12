@@ -53,7 +53,14 @@ public class RustBackendLoader {
             print("loading rsdroid-testing for: " + System.getProperty("os.name"));
 
             if (OS.isFamilyWindows()) {
-                load("rsdroid", ".dll");
+                try {
+                    load("rsdroid", ".dll");
+                } catch (UnsatisfiedLinkError e) {
+                    if (e.getMessage() != null && e.getMessage().contains("Can't find dependent libraries")) {
+                        throw new UnsatisfiedLinkErrorEx("Failed to load library. Please install GCC (https://github.com/david-allison-1/Anki-Android-Backend/issues/46)", e);
+                    }
+                }
+
             } else if (OS.isFamilyMac()) {
                 load("librsdroid", ".dylib");
             } else if (OS.isFamilyUnix()) {
